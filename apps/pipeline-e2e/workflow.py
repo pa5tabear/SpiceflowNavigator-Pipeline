@@ -3,8 +3,14 @@
 
 import requests
 from pathlib import Path
-from apps.navigator_ingest.rss_parser import RSSParser
-from libs.common_utils.runpod_client import RunPodClient
+import sys
+
+# Add paths for imports
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "apps" / "navigator-ingest"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "libs" / "common-utils"))
+
+from rss_parser import RSSParser
+from runpod_client import RunPodClient
 
 
 class WorkflowManager:

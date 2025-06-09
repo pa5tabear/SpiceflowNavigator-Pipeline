@@ -2,7 +2,13 @@
 # pragma: no cover
 
 import argparse
-from libs.common_utils.runpod_client import RunPodClient
+import sys
+from pathlib import Path
+
+# Add path for RunPodClient
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "libs" / "common-utils"))
+
+from runpod_client import RunPodClient
 
 
 def main(argv=None):
