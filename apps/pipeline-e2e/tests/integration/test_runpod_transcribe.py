@@ -1,7 +1,12 @@
-import os
 import pytest
+import os
+import sys
+from pathlib import Path
 
-from spiceflow.clients.runpod_client import RunPodClient
+# Add path for RunPodClient
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "libs" / "common-utils"))
+
+from runpod_client import RunPodClient
 from gradio_client import utils
 
 AUDIO_URL = "https://github.com/gradio-app/gradio/raw/main/test/test_files/audio_sample.wav"
@@ -23,3 +28,5 @@ def test_runpod_transcribe_live():
         stream=False,
     )
     assert isinstance(result, str) and result.strip()
+
+

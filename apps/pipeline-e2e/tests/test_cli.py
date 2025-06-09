@@ -4,7 +4,10 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from spiceflow import cli
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from cli import main
 
 
 def test_cli(monkeypatch, capsys):

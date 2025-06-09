@@ -3,13 +3,21 @@ import wave
 import requests
 import types
 import pytest
+import sys
+from pathlib import Path
 
-from spiceflow.clients.runpod_client import RunPodClient
-from spiceflow.cli import main as cli_main
-from spiceflow.analyzer import StrategicAnalyzer
-from spiceflow.config import load_feeds
-from spiceflow.rss_parser import RSSParser
-from spiceflow.workflow import WorkflowManager
+# Add paths for all needed modules
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "libs" / "common-utils"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "apps" / "navigator-ingest"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "apps" / "navigator-strategy"))
+
+from runpod_client import RunPodClient
+from cli import main as cli_main
+from analyzer import StrategicAnalyzer
+from config import load_feeds
+from rss_parser import RSSParser
+from workflow import WorkflowManager
 
 
 @pytest.mark.integration
@@ -32,9 +40,9 @@ def test_proxy_transcription(tmp_path, monkeypatch):
         def predict(self, *args, **kwargs):
             return "ok"
 
-    monkeypatch.setattr("spiceflow.clients.runpod_client.Client", DummyPredict)
+    monkeypatch.setattr("runpod_client.Client", DummyPredict)
     monkeypatch.setattr(
-        "spiceflow.clients.runpod_client.requests.get",
+        "runpod_client.requests.get",
         lambda url, timeout=5: types.SimpleNamespace(
             raise_for_status=lambda: None, status_code=200
         ),
@@ -63,19 +71,19 @@ def test_proxy_transcription(tmp_path, monkeypatch):
             self.calls.append(path)
             return "hi"
 
-    monkeypatch.setattr("spiceflow.cli.RunPodClient", DummyClient)
+    monkeypatch.setattr("cli.RunPodClient", DummyClient)
     cli_main(["file.wav"])
 
     parser = RSSParser()
     xml = "<rss><channel><item><enclosure url='a.mp3'/></item><item><enclosure url='b.mp3'/></item></channel></rss>"
-    monkeypatch.setattr("spiceflow.workflow.RSSParser", lambda: parser)
+    monkeypatch.setattr("workflow.RSSParser", lambda: parser)
     monkeypatch.setattr(
-        "spiceflow.workflow.requests.get",
+        "workflow.requests.get",
         lambda url: type(
             "R", (), {"text": xml, "raise_for_status": lambda self: None}
         )(),
     )
-    monkeypatch.setattr("spiceflow.workflow.RunPodClient", lambda: DummyClient())
+    monkeypatch.setattr("workflow.RunPodClient", lambda: DummyClient())
     manager = WorkflowManager("http://feed", transcripts_dir=tmp_path)
     manager.run()
     files = sorted(tmp_path.glob("*.md"))
@@ -103,19 +111,19 @@ def test_cli_and_workflow(tmp_path, monkeypatch):
             self.calls.append(path)
             return "hi"
 
-    monkeypatch.setattr("spiceflow.cli.RunPodClient", DummyClient)
+    monkeypatch.setattr("cli.RunPodClient", DummyClient)
     cli_main(["file.wav"])
 
     parser = RSSParser()
     xml = "<rss><channel><item><enclosure url='a.mp3'/></item><item><enclosure url='b.mp3'/></item></channel></rss>"
-    monkeypatch.setattr("spiceflow.workflow.RSSParser", lambda: parser)
+    monkeypatch.setattr("workflow.RSSParser", lambda: parser)
     monkeypatch.setattr(
-        "spiceflow.workflow.requests.get",
+        "workflow.requests.get",
         lambda url: type(
             "R", (), {"text": xml, "raise_for_status": lambda self: None}
         )(),
     )
-    monkeypatch.setattr("spiceflow.workflow.RunPodClient", lambda: DummyClient())
+    monkeypatch.setattr("workflow.RunPodClient", lambda: DummyClient())
     manager = WorkflowManager("http://feed", transcripts_dir=tmp_path)
     manager.run()
     files = sorted(tmp_path.glob("*.md"))

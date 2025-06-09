@@ -32,8 +32,12 @@ def test_e2e_submission_and_status_check():
     }
 
     # Exercise additional modules for coverage
-    from spiceflow.analyzer import StrategicAnalyzer
-    from spiceflow.config import load_feeds
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "apps" / "navigator-strategy"))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "libs" / "common-utils"))
+    from analyzer import StrategicAnalyzer
+    from config import load_feeds
 
     analyzer = StrategicAnalyzer()
     analyzer.analyze("This strategy roadmap outlines revenue growth.")

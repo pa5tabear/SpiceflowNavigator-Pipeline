@@ -2,7 +2,10 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from spiceflow.workflow import WorkflowManager
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from workflow import WorkflowManager
 
 class DummyParser:
     def __init__(self, urls):
