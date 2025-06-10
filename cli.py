@@ -10,18 +10,28 @@ from analyzer import StrategicAnalyzer
 from workflow import WorkflowManager
 
 
+def _transcribe_proc(audio_url: str) -> None:
+    """Process target to transcribe audio and print the result."""
+    print(RunPodClient().transcribe(audio_url))
+
+
+def _analyze_proc(text: str) -> None:
+    """Process target to analyze text and print the result."""
+    print(StrategicAnalyzer().analyze(text))
+
+
+def _workflow_proc(feed_url: str) -> None:
+    """Process target to execute the workflow."""
+    WorkflowManager(feed_url).run()
+
+
 def _run_multi(audio_url: str, text: str, feed_url: str) -> None:
     """Run transcription, analysis and workflow concurrently."""
-    def transcribe():
-        print(RunPodClient().transcribe(audio_url))
-
-    def analyze():
-        print(StrategicAnalyzer().analyze(text))
-
-    def workflow():
-        WorkflowManager(feed_url).run()
-
-    procs = [mp.Process(target=f) for f in (transcribe, analyze, workflow)]
+    procs = [
+        mp.Process(target=_transcribe_proc, args=(audio_url,)),
+        mp.Process(target=_analyze_proc, args=(text,)),
+        mp.Process(target=_workflow_proc, args=(feed_url,)),
+    ]
     for p in procs:
         p.start()
     for p in procs:
