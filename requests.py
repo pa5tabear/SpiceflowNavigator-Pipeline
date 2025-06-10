@@ -9,3 +9,7 @@ class Response:
 
 def get(url, timeout=5):
     return Response()
+
+
+def post(url, json=None, timeout=5):
+    return Response()
