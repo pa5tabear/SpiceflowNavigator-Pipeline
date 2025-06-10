@@ -16,6 +16,12 @@ make install
 make test
 ```
 
+Run all tasks concurrently:
+
+```bash
+python cli.py --multi AUDIO_URL --text "Some text" --feed-url https://example.com/feed
+```
+
 ## Agent Responsibilities
 
 - 🎯 **End-to-end workflow orchestration**

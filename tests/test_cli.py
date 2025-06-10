@@ -7,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import cli
 from cli import main
 
 
@@ -22,3 +23,8 @@ def test_cli(monkeypatch, capsys):
 
     captured = capsys.readouterr()
     assert captured.out.strip() == "dummy-transcript"
+
+
+def test_cli_multi_runs(monkeypatch, capsys):
+    monkeypatch.setattr("spiceflow.cli.WorkflowManager.run", lambda self: None)
+    main(["--multi", "audio.wav", "--text", "hi", "--feed-url", "http://feed"])
