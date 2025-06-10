@@ -4,7 +4,28 @@
 import argparse
 import sys
 import builtins
+import multiprocessing as mp
 from runpod_client import RunPodClient
+from analyzer import StrategicAnalyzer
+from workflow import WorkflowManager
+
+
+def _run_multi(audio_url: str, text: str, feed_url: str) -> None:
+    """Run transcription, analysis and workflow concurrently."""
+    def transcribe():
+        print(RunPodClient().transcribe(audio_url))
+
+    def analyze():
+        print(StrategicAnalyzer().analyze(text))
+
+    def workflow():
+        WorkflowManager(feed_url).run()
+
+    procs = [mp.Process(target=f) for f in (transcribe, analyze, workflow)]
+    for p in procs:
+        p.start()
+    for p in procs:
+        p.join()
 
 
 def main(argv=None):
@@ -14,7 +35,18 @@ def main(argv=None):
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("audio_url", help="URL of the audio file to transcribe")
+    parser.add_argument(
+        "--multi",
+        action="store_true",
+        help="Run transcription, analysis and workflow concurrently",
+    )
+    parser.add_argument("--text", default="Test text")
+    parser.add_argument("--feed-url", default="https://example.com/feed")
     args = parser.parse_args(argv)
+
+    if args.multi:
+        _run_multi(args.audio_url, args.text, args.feed_url)
+        return
 
     if not args.audio_url:
         parser.error("audio_url is required")
