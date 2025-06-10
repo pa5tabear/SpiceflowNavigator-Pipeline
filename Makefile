@@ -5,7 +5,7 @@ help:
 	@echo "================================"
 	@echo ""
 	@echo "  test     Run tests"
-	@echo "  install  Install dependencies + CommonUtils"
+	@echo "  install  Install dependencies"
 	@echo "  dev      Start development server"
 	@echo "  clean    Clean temporary files"
 
@@ -14,7 +14,6 @@ test:
 
 install:
 	pip install -r requirements.txt
-	pip install -e ./common-utils/
 
 dev:
 	python cli.py --help

@@ -3,5 +3,4 @@ requests>=2.31.0
 pydantic>=2.0.0
 pyyaml>=6.0
 pytest>=7.4.0 
-# CommonUtils provided via submodule in ./common-utils/
-# To install: pip install -e ./common-utils/
+# Optional shared utilities are no longer installed automatically

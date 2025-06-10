@@ -34,16 +34,15 @@ make clean         # Clean temporary files
 ```
 
 
-## CommonUtils Submodule
+## Optional CommonUtils Package
 
-This repository includes CommonUtils as a submodule:
+The pipeline can run without the shared utilities package. If you need those
+extras, clone the [CommonUtils](git@github.com:pa5tabear/SpiceflowNavigator-CommonUtils) repository
+and install it manually:
 
 ```bash
-# Update CommonUtils to latest
-git submodule update --remote common-utils
-
-# Install CommonUtils in development mode
-pip install -e ./common-utils/
+git clone git@github.com:pa5tabear/SpiceflowNavigator-CommonUtils.git
+pip install -e SpiceflowNavigator-CommonUtils/
 ```
 
 ## Related Repositories
