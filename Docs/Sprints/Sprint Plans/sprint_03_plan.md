@@ -25,7 +25,7 @@ Emergency CI fix: resolve common-utils dependency blocking all builds with immed
 - [ ] Local make commands work without errors
 - [ ] No functional regression in existing CLI features
 - [ ] Emergency fix documented with clear rollback plan
-- [ ] Sprint execution actually completed (not skipped)
+- [ ] Sprint execution completed; skipping or cancelling triggers a failure review
 - [ ] Ready for future common-utils integration when available
 
 ## 6 · Proposed Next Sprint
