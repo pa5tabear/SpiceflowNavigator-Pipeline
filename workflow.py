@@ -54,6 +54,12 @@ class WorkflowManager:
             path = self._path_for_url(url)
             if path.exists():
                 continue
-            transcript = self.client.transcribe(url)
+            if hasattr(self.client, "transcribe"):
+                transcript = self.client.transcribe(url)
+            else:
+                transcript = self.client.run(
+                    file_path=url,
+                    model="", task="transcribe", temperature=0.0, stream=False
+                )
             content = f"# Transcript\n\nURL: {url}\n\n{transcript}\n"
             path.write_text(content)

@@ -1,1 +1,1 @@
-# Pipeline E2E Agent Package 
+"""Spiceflow Navigator Pipeline package."""
