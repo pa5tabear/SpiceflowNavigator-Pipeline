@@ -5,9 +5,8 @@ import requests
 from pathlib import Path
 import sys
 
-# Add paths for imports
+# Add path for ingest app if running from monorepo
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "apps" / "navigator-ingest"))
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "libs" / "common-utils"))
 
 from rss_parser import RSSParser
 from runpod_client import RunPodClient
