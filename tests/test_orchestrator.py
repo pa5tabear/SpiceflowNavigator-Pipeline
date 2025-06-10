@@ -1,5 +1,5 @@
 import asyncio
-from orchestrator import PipelineOrchestrator
+from orchestrator import PipelineOrchestrator, EventBus
 
 
 class DummyIngest:
@@ -53,3 +53,19 @@ def test_orchestrator_retry():
     result = asyncio.run(orchestrator.run("http://feed", limit=1))
     assert len(result) == 1
     assert ingest.calls.count(("transcribe", "a.mp3")) == 2
+
+
+def test_event_bus():
+    ingest = DummyIngest()
+    strategy = DummyStrategy()
+    bus = EventBus()
+    events: list[str] = []
+    bus.on("discovered", lambda urls: events.append("discovered"))
+    bus.on("transcribed", lambda url, text: events.append("transcribed"))
+    bus.on("analyzed", lambda url, summary: events.append("analyzed"))
+    bus.on("completed", lambda results: events.append("completed"))
+    orch = PipelineOrchestrator(ingest, strategy, bus=bus)
+    asyncio.run(orch.run("http://feed", limit=1))
+    assert events[0] == "discovered"
+    assert events[-1] == "completed"
+

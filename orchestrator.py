@@ -4,6 +4,20 @@ from typing import Any, Optional
 
 from agent_client import IngestAgentClient, StrategyAgentClient
 
+
+class EventBus:
+    """Minimal synchronous event dispatcher."""
+
+    def __init__(self) -> None:
+        self._handlers: dict[str, list[Callable[..., None]]] = {}
+
+    def on(self, event: str, handler: Callable[..., None]) -> None:
+        self._handlers.setdefault(event, []).append(handler)
+
+    def emit(self, event: str, **data: Any) -> None:
+        for h in self._handlers.get(event, []):
+            h(**data)
+
 async def run_task(task: Callable[[], Awaitable[None]]) -> None:
     await task()
 
@@ -23,10 +37,12 @@ class PipelineOrchestrator:
         ingest: IngestAgentClient,
         strategy: StrategyAgentClient,
         retries: int = 1,
+        bus: EventBus | None = None,
     ) -> None:
         self.ingest = ingest
         self.strategy = strategy
         self.retries = retries
+        self.bus = bus or EventBus()
 
     # ----------------------------------------------------------
     def _call_with_retry(self, func: Callable[..., Any], *args: Any) -> Optional[Any]:
@@ -42,14 +58,17 @@ class PipelineOrchestrator:
         transcript = self._call_with_retry(self.ingest.transcribe, url)
         if not transcript:
             return None
+        self.bus.emit("transcribed", url=url, text=transcript)
         summary = self._call_with_retry(self.strategy.analyze, transcript)
         if summary is None:
             return None
+        self.bus.emit("analyzed", url=url, summary=summary)
         return {"url": url, "summary": summary}
 
     # ----------------------------------------------------------
     async def run(self, feed_url: str, limit: int = 10, parallel: bool = False) -> list[dict[str, Any]]:
         urls = self._call_with_retry(self.ingest.discover, feed_url) or []
+        self.bus.emit("discovered", urls=urls)
         results: list[dict[str, Any]] = []
 
         async def handler(url: str) -> None:
@@ -63,4 +82,5 @@ class PipelineOrchestrator:
         else:
             await run_sequential(tasks)
 
+        self.bus.emit("completed", results=results)
         return results

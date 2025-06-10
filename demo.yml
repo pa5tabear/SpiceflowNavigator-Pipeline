@@ -1,0 +1,4 @@
+feed_url: https://example.com/feed
+limit: 2
+ingest_url: http://localhost:8001
+strategy_url: http://localhost:8002
